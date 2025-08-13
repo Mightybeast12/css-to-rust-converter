@@ -1,0 +1,72 @@
+/* Simple button styles */
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s;
+    background: #007bff;
+    color: white;
+}
+
+.button:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button:focus {
+    outline: 2px solid #007bff;
+    outline-offset: 2px;
+}
+
+.button-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.button-secondary:hover {
+    background: #545b62;
+}
+
+/* Card component */
+.card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Utilities */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .button {
+        width: 100%;
+        padding: 12px 16px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+}

@@ -1,0 +1,79 @@
+{
+    "colors": {
+        "#007bff": "var(--color-primary)",
+        "#0056b3": "var(--color-primary-hover)",
+        "#004085": "var(--color-primary-active)",
+        "#6c757d": "var(--color-secondary)",
+        "#545b62": "var(--color-secondary-hover)",
+        "#28a745": "var(--color-success)",
+        "#1e7e34": "var(--color-success-hover)",
+        "#dc3545": "var(--color-error)",
+        "#c82333": "var(--color-error-hover)",
+        "#ffc107": "var(--color-warning)",
+        "#e0a800": "var(--color-warning-hover)",
+        "#212529": "var(--color-text-primary)",
+        "#6c757d": "var(--color-text-secondary)",
+        "#adb5bd": "var(--color-text-muted)",
+        "#ffffff": "var(--color-text-on-primary)",
+        "#f8f9fa": "var(--color-surface)",
+        "#e9ecef": "var(--color-surface-hover)",
+        "#dee2e6": "var(--color-border)",
+        "#adb5bd": "var(--color-border-hover)",
+        "white": "var(--color-background)",
+        "black": "var(--color-text-primary)",
+        "transparent": "transparent"
+    },
+    "spacing": {
+        "2px": "var(--spacing-xs)",
+        "4px": "var(--spacing-xs)",
+        "8px": "var(--spacing-sm)",
+        "12px": "var(--spacing-md)",
+        "16px": "var(--spacing-md)",
+        "20px": "var(--spacing-lg)",
+        "24px": "var(--spacing-lg)",
+        "32px": "var(--spacing-xl)",
+        "40px": "var(--spacing-xxl)",
+        "48px": "var(--spacing-xxl)",
+        "0.125rem": "var(--spacing-xs)",
+        "0.25rem": "var(--spacing-xs)",
+        "0.5rem": "var(--spacing-sm)",
+        "0.75rem": "var(--spacing-md)",
+        "1rem": "var(--spacing-md)",
+        "1.25rem": "var(--spacing-lg)",
+        "1.5rem": "var(--spacing-lg)",
+        "2rem": "var(--spacing-xl)",
+        "2.5rem": "var(--spacing-xxl)",
+        "3rem": "var(--spacing-xxl)"
+    },
+    "border_radius": {
+        "2px": "var(--border-radius-sm)",
+        "4px": "var(--border-radius-sm)",
+        "6px": "var(--border-radius-md)",
+        "8px": "var(--border-radius-md)",
+        "12px": "var(--border-radius-lg)",
+        "16px": "var(--border-radius-lg)",
+        "50%": "50%",
+        "9999px": "var(--border-radius-full)"
+    },
+    "font_sizes": {
+        "12px": "var(--font-size-xs)",
+        "14px": "var(--font-size-sm)",
+        "16px": "var(--font-size-md)",
+        "18px": "var(--font-size-lg)",
+        "20px": "var(--font-size-xl)",
+        "24px": "var(--font-size-xxl)"
+    },
+    "shadows": {
+        "0 1px 3px rgba(0,0,0,0.1)": "var(--shadow-sm)",
+        "0 4px 6px rgba(0,0,0,0.1)": "var(--shadow-md)",
+        "0 10px 15px rgba(0,0,0,0.1)": "var(--shadow-lg)",
+        "0 20px 25px rgba(0,0,0,0.1)": "var(--shadow-xl)",
+        "none": "none"
+    },
+    "transitions": {
+        "0.15s": "var(--transition-fast)",
+        "0.2s": "var(--transition-fast)",
+        "0.3s": "var(--transition-normal)",
+        "0.5s": "var(--transition-slow)"
+    }
+}
