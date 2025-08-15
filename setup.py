@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Setup script for CSS-to-Rust converter."""
+"""Setup script for CSS-to-Rust converter. """
 
 from setuptools import find_packages, setup
 
@@ -14,8 +14,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="css-to-rust-converter",
     version="1.0.0",
-    author="Portfolio Site Tools",
-    author_email="",
+    author="Firat Honca",
+    author_email="firathonca@gmail.com",
     description="Convert CSS styles to Rust stylist format for Yew applications",
     long_description=long_description,
     long_description_content_type="text/markdown",
