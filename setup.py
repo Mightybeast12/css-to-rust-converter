@@ -16,7 +16,7 @@ setup(
     version="1.0.0",
     author="Firat Honca",
     author_email="firathonca@gmail.com",
-    description="Convert CSS styles to Rust stylist format for Yew applications",
+    description="Convert CSS styles to Rust stylist format for Yew applications and other Rust projects.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
