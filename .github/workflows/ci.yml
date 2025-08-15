@@ -20,6 +20,8 @@ jobs:
     name: Quick Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout code
@@ -28,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -49,6 +51,8 @@ jobs:
     name: Format & Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout code
@@ -57,7 +61,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -93,6 +97,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [check, lint]
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout code
@@ -101,7 +107,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Cache dependencies
         uses: actions/cache@v4
@@ -148,6 +154,8 @@ jobs:
     name: Security Audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
 
     steps:
       - name: Checkout code
@@ -156,7 +164,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Install security tools
         run: |
@@ -179,14 +187,16 @@ jobs:
     name: Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    # Skip if commit message contains [skip ci]
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     strategy:
       matrix:
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
         os: [ubuntu-latest]
         include:
-          - python-version: '3.11'
+          - python-version: "3.11"
             os: windows-latest
-          - python-version: '3.11'
+          - python-version: "3.11"
             os: macos-latest
       fail-fast: false
 
