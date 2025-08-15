@@ -1,14 +1,16 @@
 """CSS parsing utilities for converting CSS to Rust."""
 
 import re
-import cssutils
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+from typing import Dict, List, Optional, Tuple
+
+import cssutils
 
 
 @dataclass
 class CssRule:
     """Represents a parsed CSS rule."""
+
     selector: str
     properties: Dict[str, str]
     media_query: Optional[str] = None
@@ -19,6 +21,7 @@ class CssRule:
 @dataclass
 class CssKeyframe:
     """Represents a CSS keyframe animation."""
+
     name: str
     keyframes: Dict[str, Dict[str, str]]
 
@@ -42,13 +45,15 @@ class CssParser:
             # Try using cssutils for robust parsing
             return self._parse_with_cssutils(css_content)
         except Exception as e:
-            print(f"Warning: cssutils parsing failed ({e}), falling back to regex parsing")
+            print(
+                f"Warning: cssutils parsing failed ({e}), falling back to regex parsing"
+            )
             return self._parse_with_regex(css_content)
 
     def _parse_with_cssutils(self, css_content: str) -> List[CssRule]:
         """Parse CSS using the cssutils library."""
         # Suppress cssutils warnings
-        cssutils.log.setLevel('ERROR')
+        cssutils.log.setLevel("ERROR")
 
         sheet = cssutils.parseString(css_content)
         rules = []
@@ -87,8 +92,8 @@ class CssParser:
 
             # Extract pseudo-selector if present
             pseudo_selector = None
-            if ':' in selector and not selector.startswith(':root'):
-                parts = selector.split(':', 1)
+            if ":" in selector and not selector.startswith(":root"):
+                parts = selector.split(":", 1)
                 if len(parts) == 2:
                     selector = parts[0].strip()
                     pseudo_selector = parts[1].strip()
@@ -97,7 +102,7 @@ class CssParser:
                 selector=selector,
                 properties=properties,
                 pseudo_selector=pseudo_selector,
-                raw_css=rule.cssText
+                raw_css=rule.cssText,
             )
         except Exception as e:
             print(f"Warning: Failed to parse style rule: {e}")
@@ -143,26 +148,32 @@ class CssParser:
         rules = []
 
         # Remove comments
-        css_content = re.sub(r'/\*.*?\*/', '', css_content, flags=re.DOTALL)
+        css_content = re.sub(r"/\*.*?\*/", "", css_content, flags=re.DOTALL)
 
         # Extract media queries
-        media_pattern = r'@media\s+([^{]+)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}'
+        media_pattern = r"@media\s+([^{]+)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
         media_matches = re.findall(media_pattern, css_content, re.DOTALL)
 
         for media_query, media_content in media_matches:
-            media_rules = self._parse_rules_content(media_content.strip(), media_query.strip())
+            media_rules = self._parse_rules_content(
+                media_content.strip(), media_query.strip()
+            )
             rules.extend(media_rules)
             # Remove processed media query from content
-            css_content = css_content.replace(f'@media {media_query} {{{media_content}}}', '')
+            css_content = css_content.replace(
+                f"@media {media_query} {{{media_content}}}", ""
+            )
 
         # Extract keyframes
-        keyframe_pattern = r'@keyframes\s+([^{]+)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}'
+        keyframe_pattern = r"@keyframes\s+([^{]+)\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}"
         keyframe_matches = re.findall(keyframe_pattern, css_content, re.DOTALL)
 
         for name, keyframe_content in keyframe_matches:
             self._parse_keyframes_content(name.strip(), keyframe_content.strip())
             # Remove processed keyframes from content
-            css_content = css_content.replace(f'@keyframes {name} {{{keyframe_content}}}', '')
+            css_content = css_content.replace(
+                f"@keyframes {name} {{{keyframe_content}}}", ""
+            )
 
         # Parse regular rules
         regular_rules = self._parse_rules_content(css_content)
@@ -170,12 +181,14 @@ class CssParser:
 
         return rules
 
-    def _parse_rules_content(self, content: str, media_query: Optional[str] = None) -> List[CssRule]:
+    def _parse_rules_content(
+        self, content: str, media_query: Optional[str] = None
+    ) -> List[CssRule]:
         """Parse CSS rules from content string."""
         rules = []
 
         # Pattern to match CSS rules: selector { properties }
-        rule_pattern = r'([^{]+)\{([^}]+)\}'
+        rule_pattern = r"([^{]+)\{([^}]+)\}"
         rule_matches = re.findall(rule_pattern, content)
 
         for selector, properties_str in rule_matches:
@@ -189,8 +202,8 @@ class CssParser:
 
             # Extract pseudo-selector
             pseudo_selector = None
-            if ':' in selector and not selector.startswith(':root'):
-                parts = selector.split(':', 1)
+            if ":" in selector and not selector.startswith(":root"):
+                parts = selector.split(":", 1)
                 if len(parts) == 2:
                     selector = parts[0].strip()
                     pseudo_selector = parts[1].strip()
@@ -200,7 +213,7 @@ class CssParser:
                 properties=properties,
                 media_query=media_query,
                 pseudo_selector=pseudo_selector,
-                raw_css=f"{selector} {{ {properties_str} }}"
+                raw_css=f"{selector} {{ {properties_str} }}",
             )
             rules.append(rule)
 
@@ -211,13 +224,13 @@ class CssParser:
         properties = {}
 
         # Split by semicolon and parse each property
-        for prop_str in properties_str.split(';'):
+        for prop_str in properties_str.split(";"):
             prop_str = prop_str.strip()
             if not prop_str:
                 continue
 
-            if ':' in prop_str:
-                name, value = prop_str.split(':', 1)
+            if ":" in prop_str:
+                name, value = prop_str.split(":", 1)
                 name = name.strip()
                 value = value.strip()
 
@@ -231,7 +244,7 @@ class CssParser:
         keyframes = {}
 
         # Pattern to match keyframe rules: percentage { properties }
-        keyframe_pattern = r'([^{]+)\{([^}]+)\}'
+        keyframe_pattern = r"([^{]+)\{([^}]+)\}"
         keyframe_matches = re.findall(keyframe_pattern, content)
 
         for key, properties_str in keyframe_matches:
@@ -244,7 +257,9 @@ class CssParser:
         if keyframes:
             self.keyframes.append(CssKeyframe(name=name, keyframes=keyframes))
 
-    def group_rules_by_component(self, rules: List[CssRule]) -> Dict[str, List[CssRule]]:
+    def group_rules_by_component(
+        self, rules: List[CssRule]
+    ) -> Dict[str, List[CssRule]]:
         """Group CSS rules by component based on selector patterns."""
         components = {}
 
@@ -261,50 +276,52 @@ class CssParser:
     def _extract_component_name(self, selector: str) -> str:
         """Extract component name from CSS selector."""
         # Remove leading dots and spaces
-        selector = selector.lstrip('. ')
+        selector = selector.lstrip(". ")
 
         # Common component patterns
-        if selector.startswith('btn'):
-            return 'button'
-        elif selector.startswith('card'):
-            return 'card'
-        elif selector.startswith('nav'):
-            return 'navbar'
-        elif selector.startswith('modal'):
-            return 'modal'
-        elif selector.startswith('form'):
-            return 'form'
-        elif selector.startswith('input'):
-            return 'input'
-        elif selector.startswith('table'):
-            return 'table'
-        elif selector.startswith('alert'):
-            return 'alert'
+        if selector.startswith("btn"):
+            return "button"
+        elif selector.startswith("card"):
+            return "card"
+        elif selector.startswith("nav"):
+            return "navbar"
+        elif selector.startswith("modal"):
+            return "modal"
+        elif selector.startswith("form"):
+            return "form"
+        elif selector.startswith("input"):
+            return "input"
+        elif selector.startswith("table"):
+            return "table"
+        elif selector.startswith("alert"):
+            return "alert"
 
         # Extract first word as component name
-        words = re.split(r'[-_\s]', selector)
+        words = re.split(r"[-_\s]", selector)
         if words:
             return words[0].lower()
 
-        return 'component'
+        return "component"
 
-    def get_function_name_from_selector(self, selector: str, pseudo_selector: Optional[str] = None) -> str:
+    def get_function_name_from_selector(
+        self, selector: str, pseudo_selector: Optional[str] = None
+    ) -> str:
         """Generate a Rust function name from CSS selector."""
         # Clean selector
-        name = selector.replace('.', '').replace('#', '').replace(' ', '_')
-        name = re.sub(r'[^a-zA-Z0-9_]', '_', name)
-        name = re.sub(r'_+', '_', name).strip('_')
+        name = selector.replace(".", "").replace("#", "").replace(" ", "_")
+        name = re.sub(r"[^a-zA-Z0-9_]", "_", name)
+        name = re.sub(r"_+", "_", name).strip("_")
 
         # Add pseudo selector if present
         if pseudo_selector:
-            pseudo_clean = re.sub(r'[^a-zA-Z0-9_]', '_', pseudo_selector)
+            pseudo_clean = re.sub(r"[^a-zA-Z0-9_]", "_", pseudo_selector)
             name = f"{name}_{pseudo_clean}"
 
         # Ensure it starts with a letter or underscore
-        if name and not (name[0].isalpha() or name[0] == '_'):
+        if name and not (name[0].isalpha() or name[0] == "_"):
             name = f"style_{name}"
 
-        return name.lower() if name else 'style'
+        return name.lower() if name else "style"
 
     def extract_variants(self, rules: List[CssRule]) -> Dict[str, List[CssRule]]:
         """Extract style variants from rules (e.g., btn-primary, btn-secondary)."""
@@ -328,14 +345,14 @@ class CssParser:
     def _split_variant_name(self, selector: str) -> Tuple[str, Optional[str]]:
         """Split selector into base name and variant name."""
         # Remove leading dots and clean
-        clean_selector = selector.lstrip('. ')
+        clean_selector = selector.lstrip(". ")
 
         # Common variant patterns
         variant_patterns = [
-            r'([a-zA-Z]+)[-_](primary|secondary|success|danger|warning|info|light|dark)',
-            r'([a-zA-Z]+)[-_](small|sm|large|lg|xl|xs)',
-            r'([a-zA-Z]+)[-_](outline|solid|ghost|link)',
-            r'([a-zA-Z]+)[-_]([a-zA-Z]+)'
+            r"([a-zA-Z]+)[-_](primary|secondary|success|danger|warning|info|light|dark)",
+            r"([a-zA-Z]+)[-_](small|sm|large|lg|xl|xs)",
+            r"([a-zA-Z]+)[-_](outline|solid|ghost|link)",
+            r"([a-zA-Z]+)[-_]([a-zA-Z]+)",
         ]
 
         for pattern in variant_patterns:

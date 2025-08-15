@@ -5,35 +5,40 @@ Usage: ./release.py [--dry-run|--help|--test-pypi]
 """
 
 import argparse
+import re
 import subprocess
 import sys
-import os
-import re
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 # ANSI color codes
-RED = '\033[0;31m'
-GREEN = '\033[0;32m'
-YELLOW = '\033[1;33m'
-BLUE = '\033[0;34m'
-CYAN = '\033[0;36m'
-NC = '\033[0m'  # No Color
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+CYAN = "\033[0;36m"
+NC = "\033[0m"  # No Color
+
 
 def print_error(msg):
     print(f"{RED}❌ Error: {msg}{NC}", file=sys.stderr)
 
+
 def print_success(msg):
     print(f"{GREEN}✅ {msg}{NC}")
+
 
 def print_warning(msg):
     print(f"{YELLOW}⚠️  {msg}{NC}")
 
+
 def print_info(msg):
     print(f"{BLUE}ℹ️  {msg}{NC}")
 
+
 def print_step(msg):
     print(f"{CYAN}🔄 {msg}{NC}")
+
 
 def run_command(cmd, check=True, capture_output=False):
     """Run a shell command."""
@@ -51,6 +56,7 @@ def run_command(cmd, check=True, capture_output=False):
             print_error(f"Command failed: {cmd}")
             sys.exit(1)
         return None
+
 
 def get_current_version():
     """Get the current version from setup.py or pyproject.toml."""
@@ -92,6 +98,7 @@ def get_current_version():
 
     return None
 
+
 def update_changelog(version, dry_run=False):
     """Update CHANGELOG.md with the current date for the version."""
     changelog_path = Path("CHANGELOG.md")
@@ -110,14 +117,14 @@ def update_changelog(version, dry_run=False):
 
     # Replace [Unreleased] with [Unreleased] and new version section
     new_content = content.replace(
-        "## [Unreleased]",
-        f"## [Unreleased]\n\n## [{version}] - {current_date}"
+        "## [Unreleased]", f"## [Unreleased]\n\n## [{version}] - {current_date}"
     )
 
     with open(changelog_path, "w") as f:
         f.write(new_content)
 
     print_success(f"Updated CHANGELOG.md for version {version}")
+
 
 def run_tests(dry_run=False):
     """Run the test suite."""
@@ -134,6 +141,7 @@ def run_tests(dry_run=False):
         run_command("pytest -v")
 
     print_success("All tests passed")
+
 
 def check_git_status(dry_run=False):
     """Check git repository status."""
@@ -163,7 +171,9 @@ def check_git_status(dry_run=False):
 
         if local_commit != remote_commit:
             # Check if need to pull
-            merge_base = run_command(f"git merge-base {local_commit} {remote_commit}", capture_output=True)
+            merge_base = run_command(
+                f"git merge-base {local_commit} {remote_commit}", capture_output=True
+            )
             if merge_base == local_commit:
                 print_error("Local branch is behind origin/main")
                 print_info("Fix: git pull origin main")
@@ -171,12 +181,13 @@ def check_git_status(dry_run=False):
 
     print_success("Git status OK")
 
+
 def create_tag_and_push(version, dry_run=False, test_pypi=False):
     """Create git tag and push to remote."""
     tag = f"v{version}"
 
     # Handle existing tags
-    existing_tags = run_command("git tag -l", capture_output=True).split('\n')
+    existing_tags = run_command("git tag -l", capture_output=True).split("\n")
     if tag in existing_tags:
         print_warning(f"Tag {tag} already exists locally")
         if not dry_run:
@@ -221,14 +232,21 @@ def create_tag_and_push(version, dry_run=False, test_pypi=False):
     print()
     repo_url = run_command("git config --get remote.origin.url", capture_output=True)
     if "github.com" in repo_url:
-        repo_path = re.search(r'github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$', repo_url)
+        repo_path = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", repo_url)
         if repo_path:
-            print_info(f"View release: https://github.com/{repo_path.group(1)}/releases/tag/{tag}")
+            print_info(
+                f"View release: https://github.com/{repo_path.group(1)}/releases/tag/{tag}"
+            )
+
 
 def main():
     parser = argparse.ArgumentParser(description="Release script for Python packages")
-    parser.add_argument("--dry-run", action="store_true", help="Preview changes without executing")
-    parser.add_argument("--test-pypi", action="store_true", help="Release to TestPyPI (creates rc tag)")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Preview changes without executing"
+    )
+    parser.add_argument(
+        "--test-pypi", action="store_true", help="Release to TestPyPI (creates rc tag)"
+    )
     args = parser.parse_args()
 
     print_step(f"Preparing release for css-to-rust-converter")
@@ -241,7 +259,9 @@ def main():
 
     # Add rc suffix for test releases
     if args.test_pypi and "rc" not in version:
-        print_error("For TestPyPI releases, version should contain 'rc' (e.g., 1.0.0rc1)")
+        print_error(
+            "For TestPyPI releases, version should contain 'rc' (e.g., 1.0.0rc1)"
+        )
         sys.exit(1)
 
     print_info(f"Version: {version}")
@@ -257,6 +277,7 @@ def main():
 
     # Create tag and push
     create_tag_and_push(version, args.dry_run, args.test_pypi)
+
 
 if __name__ == "__main__":
     main()

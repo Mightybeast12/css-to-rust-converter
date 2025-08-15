@@ -2,7 +2,7 @@
 
 import json
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 
 class ValueMappings:
@@ -24,45 +24,36 @@ class ValueMappings:
                 "#007bff": "var(--color-primary)",
                 "#0056b3": "var(--color-primary-hover)",
                 "#004085": "var(--color-primary-active)",
-
                 # Secondary colors
                 "#6c757d": "var(--color-secondary)",
                 "#545b62": "var(--color-secondary-hover)",
                 "#4e555b": "var(--color-secondary-active)",
-
                 # Success colors
                 "#28a745": "var(--color-success)",
                 "#1e7e34": "var(--color-success-hover)",
-
                 # Danger colors
                 "#dc3545": "var(--color-error)",
                 "#c82333": "var(--color-error-hover)",
-
                 # Warning colors
                 "#ffc107": "var(--color-warning)",
                 "#e0a800": "var(--color-warning-hover)",
-
                 # Text colors
                 "#212529": "var(--color-text-primary)",
                 "#6c757d": "var(--color-text-secondary)",
                 "#adb5bd": "var(--color-text-muted)",
                 "#ffffff": "var(--color-text-on-primary)",
-
                 # Background colors
                 "#ffffff": "var(--color-background)",
                 "#f8f9fa": "var(--color-surface)",
                 "#e9ecef": "var(--color-surface-hover)",
-
                 # Border colors
                 "#dee2e6": "var(--color-border)",
                 "#adb5bd": "var(--color-border-hover)",
-
                 # Common shorthands
                 "white": "var(--color-background)",
                 "black": "var(--color-text-primary)",
                 "transparent": "transparent",
             },
-
             "spacing": {
                 # Pixel values
                 "2px": "var(--spacing-xs)",
@@ -75,7 +66,6 @@ class ValueMappings:
                 "32px": "var(--spacing-xl)",
                 "40px": "var(--spacing-xxl)",
                 "48px": "var(--spacing-xxl)",
-
                 # REM values
                 "0.125rem": "var(--spacing-xs)",
                 "0.25rem": "var(--spacing-xs)",
@@ -88,7 +78,6 @@ class ValueMappings:
                 "2.5rem": "var(--spacing-xxl)",
                 "3rem": "var(--spacing-xxl)",
             },
-
             "border_radius": {
                 "2px": "var(--border-radius-sm)",
                 "4px": "var(--border-radius-sm)",
@@ -98,7 +87,6 @@ class ValueMappings:
                 "16px": "var(--border-radius-lg)",
                 "50%": "50%",
                 "9999px": "var(--border-radius-full)",
-
                 "0.125rem": "var(--border-radius-sm)",
                 "0.25rem": "var(--border-radius-sm)",
                 "0.375rem": "var(--border-radius-md)",
@@ -106,7 +94,6 @@ class ValueMappings:
                 "0.75rem": "var(--border-radius-lg)",
                 "1rem": "var(--border-radius-lg)",
             },
-
             "font_sizes": {
                 "12px": "var(--font-size-xs)",
                 "14px": "var(--font-size-sm)",
@@ -114,7 +101,6 @@ class ValueMappings:
                 "18px": "var(--font-size-lg)",
                 "20px": "var(--font-size-xl)",
                 "24px": "var(--font-size-xxl)",
-
                 "0.75rem": "var(--font-size-xs)",
                 "0.875rem": "var(--font-size-sm)",
                 "1rem": "var(--font-size-md)",
@@ -122,7 +108,6 @@ class ValueMappings:
                 "1.25rem": "var(--font-size-xl)",
                 "1.5rem": "var(--font-size-xxl)",
             },
-
             "font_weights": {
                 "300": "var(--font-weight-light)",
                 "400": "var(--font-weight-normal)",
@@ -130,14 +115,12 @@ class ValueMappings:
                 "600": "var(--font-weight-semibold)",
                 "700": "var(--font-weight-bold)",
                 "800": "var(--font-weight-extrabold)",
-
                 "light": "var(--font-weight-light)",
                 "normal": "var(--font-weight-normal)",
                 "medium": "var(--font-weight-medium)",
                 "semibold": "var(--font-weight-semibold)",
                 "bold": "var(--font-weight-bold)",
             },
-
             "shadows": {
                 "0 1px 3px rgba(0,0,0,0.1)": "var(--shadow-sm)",
                 "0 4px 6px rgba(0,0,0,0.1)": "var(--shadow-md)",
@@ -145,7 +128,6 @@ class ValueMappings:
                 "0 20px 25px rgba(0,0,0,0.1)": "var(--shadow-xl)",
                 "none": "none",
             },
-
             "transitions": {
                 "0.15s": "var(--transition-fast)",
                 "0.2s": "var(--transition-fast)",
@@ -156,20 +138,19 @@ class ValueMappings:
                 "300ms": "var(--transition-normal)",
                 "500ms": "var(--transition-slow)",
             },
-
             "breakpoints": {
                 "576px": "var(--breakpoint-sm)",
                 "768px": "var(--breakpoint-md)",
                 "992px": "var(--breakpoint-lg)",
                 "1200px": "var(--breakpoint-xl)",
                 "1400px": "var(--breakpoint-xxl)",
-            }
+            },
         }
 
     def _load_custom_mappings(self, config_path: str) -> Dict[str, Any]:
         """Load custom mappings from JSON file."""
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except (json.JSONDecodeError, FileNotFoundError) as e:
             print(f"Warning: Could not load custom mappings from {config_path}: {e}")
@@ -205,22 +186,27 @@ class ValueMappings:
         """Determine which mapping category to use for a CSS property."""
         property_name = property_name.lower()
 
-        if any(keyword in property_name for keyword in ['color', 'background']):
-            return 'colors'
-        elif any(keyword in property_name for keyword in ['padding', 'margin', 'gap', 'spacing']):
-            return 'spacing'
-        elif 'border-radius' in property_name or property_name == 'border-radius':
-            return 'border_radius'
-        elif 'font-size' in property_name:
-            return 'font_sizes'
-        elif 'font-weight' in property_name:
-            return 'font_weights'
-        elif 'box-shadow' in property_name or 'shadow' in property_name:
-            return 'shadows'
-        elif 'transition' in property_name:
-            return 'transitions'
-        elif any(keyword in property_name for keyword in ['width', 'max-width', 'min-width']):
-            return 'breakpoints'
+        if any(keyword in property_name for keyword in ["color", "background"]):
+            return "colors"
+        elif any(
+            keyword in property_name
+            for keyword in ["padding", "margin", "gap", "spacing"]
+        ):
+            return "spacing"
+        elif "border-radius" in property_name or property_name == "border-radius":
+            return "border_radius"
+        elif "font-size" in property_name:
+            return "font_sizes"
+        elif "font-weight" in property_name:
+            return "font_weights"
+        elif "box-shadow" in property_name or "shadow" in property_name:
+            return "shadows"
+        elif "transition" in property_name:
+            return "transitions"
+        elif any(
+            keyword in property_name for keyword in ["width", "max-width", "min-width"]
+        ):
+            return "breakpoints"
 
         return None
 

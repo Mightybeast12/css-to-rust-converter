@@ -1,18 +1,17 @@
 """Command-line interface for CSS to Rust converter."""
 
-import click
-import os
 import sys
 from pathlib import Path
 from typing import Optional
+
+import click
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
-from rich.table import Table
 from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.syntax import Syntax
+from rich.table import Table
 
 from .converter import CssToRustConverter
-
 
 console = Console()
 
@@ -21,25 +20,51 @@ console = Console()
 @click.version_option()
 def main():
     """CSS to Rust converter for Yew applications."""
-    pass
 
 
 @main.command()
-@click.argument('input_path', type=click.Path(exists=True))
-@click.option('-o', '--output', 'output_path', type=click.Path(),
-              help='Output file or directory path')
-@click.option('-c', '--config', 'config_path', type=click.Path(exists=True),
-              help='Custom configuration file')
-@click.option('--component', is_flag=True, default=False,
-              help='Group by component and create module structure')
-@click.option('--no-variants', is_flag=True, default=False,
-              help='Disable variant extraction')
-@click.option('--utilities', is_flag=True, default=False,
-              help='Include utility functions')
-@click.option('--analyze', is_flag=True, default=False,
-              help='Show analysis of CSS before conversion')
-def convert(input_path: str, output_path: Optional[str], config_path: Optional[str],
-           component: bool, no_variants: bool, utilities: bool, analyze: bool):
+@click.argument("input_path", type=click.Path(exists=True))
+@click.option(
+    "-o",
+    "--output",
+    "output_path",
+    type=click.Path(),
+    help="Output file or directory path",
+)
+@click.option(
+    "-c",
+    "--config",
+    "config_path",
+    type=click.Path(exists=True),
+    help="Custom configuration file",
+)
+@click.option(
+    "--component",
+    is_flag=True,
+    default=False,
+    help="Group by component and create module structure",
+)
+@click.option(
+    "--no-variants", is_flag=True, default=False, help="Disable variant extraction"
+)
+@click.option(
+    "--utilities", is_flag=True, default=False, help="Include utility functions"
+)
+@click.option(
+    "--analyze",
+    is_flag=True,
+    default=False,
+    help="Show analysis of CSS before conversion",
+)
+def convert(
+    input_path: str,
+    output_path: Optional[str],
+    config_path: Optional[str],
+    component: bool,
+    no_variants: bool,
+    utilities: bool,
+    analyze: bool,
+):
     """Convert CSS file(s) to Rust stylist format."""
 
     # Initialize converter
@@ -58,13 +83,13 @@ def convert(input_path: str, output_path: Optional[str], config_path: Optional[s
         if is_directory:
             output_path = str(input_p / "rust_styles")
         else:
-            output_path = str(input_p.with_suffix('.rs'))
+            output_path = str(input_p.with_suffix(".rs"))
 
     # Conversion options
     options = {
-        'group_by_component': component,
-        'extract_variants': not no_variants,
-        'include_utilities': utilities
+        "group_by_component": component,
+        "extract_variants": not no_variants,
+        "include_utilities": utilities,
     }
 
     # Show analysis if requested
@@ -79,7 +104,7 @@ def convert(input_path: str, output_path: Optional[str], config_path: Optional[s
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
-            console=console
+            console=console,
         ) as progress:
 
             if is_directory:
@@ -98,7 +123,7 @@ def convert(input_path: str, output_path: Optional[str], config_path: Optional[s
 
 
 @main.command()
-@click.argument('css_file', type=click.Path(exists=True))
+@click.argument("css_file", type=click.Path(exists=True))
 def analyze(css_file: str):
     """Analyze CSS file and show statistics."""
 
@@ -111,14 +136,14 @@ def analyze(css_file: str):
 
 
 @main.command()
-@click.argument('css_file', type=click.Path(exists=True))
+@click.argument("css_file", type=click.Path(exists=True))
 def validate(css_file: str):
     """Validate CSS file for conversion compatibility."""
 
     try:
         converter = CssToRustConverter()
 
-        with open(css_file, 'r', encoding='utf-8') as f:
+        with open(css_file, "r", encoding="utf-8") as f:
             css_content = f.read()
 
         warnings = converter.validate_css(css_content)
@@ -136,20 +161,18 @@ def validate(css_file: str):
 
 
 @main.command()
-@click.argument('css_content', type=str)
-@click.option('--component', is_flag=True, default=False,
-              help='Group by component')
-@click.option('--no-variants', is_flag=True, default=False,
-              help='Disable variant extraction')
+@click.argument("css_content", type=str)
+@click.option("--component", is_flag=True, default=False, help="Group by component")
+@click.option(
+    "--no-variants", is_flag=True, default=False, help="Disable variant extraction"
+)
 def preview(css_content: str, component: bool, no_variants: bool):
     """Preview Rust conversion of CSS string."""
 
     try:
         converter = CssToRustConverter()
 
-        options = {
-            'extract_variants': not no_variants
-        }
+        options = {"extract_variants": not no_variants}
 
         functions = converter.convert_string(css_content, **options)
 
@@ -188,7 +211,7 @@ def options():
             f"--{option_name.replace('_', '-')}",
             option_info["type"],
             str(option_info["default"]),
-            option_info["description"]
+            option_info["description"],
         )
 
     console.print(table)
@@ -197,7 +220,7 @@ def options():
 def _show_analysis(converter: CssToRustConverter, css_file: str):
     """Show analysis of CSS file."""
 
-    with open(css_file, 'r', encoding='utf-8') as f:
+    with open(css_file, "r", encoding="utf-8") as f:
         css_content = f.read()
 
     stats = converter.analyze_css(css_content)
@@ -222,13 +245,13 @@ def _show_analysis(converter: CssToRustConverter, css_file: str):
 [bold]Components Detected:[/bold]
 """
 
-    for component, rule_count in stats['components'].items():
+    for component, rule_count in stats["components"].items():
         analysis_content += f"• {component}: {rule_count} rules\n"
 
     panel = Panel(
         analysis_content.strip(),
         title=f"Analysis: {Path(css_file).name}",
-        border_style="blue"
+        border_style="blue",
     )
 
     console.print(panel)
@@ -239,7 +262,7 @@ def _show_conversion_results(result, output_path: str, is_directory: bool):
 
     if is_directory:
         # Directory conversion results
-        success_count = sum(1 for r in result.values() if 'error' not in r)
+        success_count = sum(1 for r in result.values() if "error" not in r)
         error_count = len(result) - success_count
 
         console.print(f"\n[green]✓ Converted {success_count} files[/green]")
@@ -257,37 +280,37 @@ def _show_conversion_results(result, output_path: str, is_directory: bool):
         table.add_column("Output", style="white")
 
         for filename, file_result in result.items():
-            if 'error' in file_result:
-                table.add_row(filename, "[red]Error[/red]", "-", file_result['error'])
+            if "error" in file_result:
+                table.add_row(filename, "[red]Error[/red]", "-", file_result["error"])
             else:
                 table.add_row(
                     filename,
                     "[green]Success[/green]",
-                    str(len(file_result.get('functions', []))),
-                    file_result.get('output', '')
+                    str(len(file_result.get("functions", []))),
+                    file_result.get("output", ""),
                 )
 
         console.print(table)
 
     else:
         # Single file conversion results
-        if result['type'] == 'single_file':
+        if result["type"] == "single_file":
             console.print(f"\n[green]✓ Converted successfully[/green]")
             console.print(f"[blue]Output file: {result['output']}[/blue]")
             console.print(f"Functions generated: {len(result['functions'])}")
 
-            if result['keyframes'] > 0:
+            if result["keyframes"] > 0:
                 console.print(f"Keyframe animations: {result['keyframes']}")
 
-        elif result['type'] == 'component_structure':
+        elif result["type"] == "component_structure":
             console.print(f"\n[green]✓ Created component structure[/green]")
             console.print(f"[blue]Output directory: {result['output']}[/blue]")
             console.print(f"Components: {len(result['components'])}")
             console.print(f"Total functions: {result['functions']}")
 
-            if result['keyframes'] > 0:
+            if result["keyframes"] > 0:
                 console.print(f"Keyframe animations: {result['keyframes']}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

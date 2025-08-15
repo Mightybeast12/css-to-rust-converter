@@ -3,15 +3,15 @@
 
 import subprocess
 import sys
-import os
 from pathlib import Path
 
 # ANSI color codes
-GREEN = '\033[0;32m'
-RED = '\033[0;31m'
-YELLOW = '\033[1;33m'
-BLUE = '\033[0;34m'
-NC = '\033[0m'
+GREEN = "\033[0;32m"
+RED = "\033[0;31m"
+YELLOW = "\033[1;33m"
+BLUE = "\033[0;34m"
+NC = "\033[0m"
+
 
 def run_command(cmd, description):
     """Run a command and report results."""
@@ -22,6 +22,7 @@ def run_command(cmd, description):
         return False
     print(f"{GREEN}✅ {description} passed!{NC}")
     return True
+
 
 def main():
     """Run all tests."""
@@ -58,7 +59,9 @@ def main():
 
     # Run tests
     if Path("tests").exists() or Path("test").exists():
-        if not run_command("pytest -v --cov=. --cov-report=term-missing", "Running tests"):
+        if not run_command(
+            "pytest -v --cov=. --cov-report=term-missing", "Running tests"
+        ):
             all_passed = False
     else:
         print(f"{YELLOW}⚠️  No tests directory found{NC}")
@@ -68,13 +71,14 @@ def main():
         if not run_command("cd docs && make html", "Building documentation"):
             print(f"{YELLOW}⚠️  Documentation build failed (non-blocking){NC}")
 
-    print("\n" + "="*50)
+    print("\n" + "=" * 50)
     if all_passed:
         print(f"{GREEN}✅ All tests passed!{NC}")
         return 0
     else:
         print(f"{RED}❌ Some tests failed!{NC}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())
