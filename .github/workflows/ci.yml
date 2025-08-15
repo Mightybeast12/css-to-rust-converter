@@ -15,13 +15,124 @@ permissions:
   security-events: write
 
 jobs:
+  # Auto-fix job runs first
+  auto-fix:
+    name: Auto-Fix Code
+    runs-on: ubuntu-latest
+    # Skip if the commit was made by the auto-fix bot to prevent loops
+    if: "!contains(github.event.head_commit.message, '[auto-fix]')"
+    timeout-minutes: 10
+    outputs:
+      changes_made: ${{ steps.verify_changes.outputs.changes }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Use the PR head ref if PR, otherwise use default
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref }}
+          # Use token with write permissions
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # Fetch full history for better git operations
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            .mypy_cache
+          key: ${{ runner.os }}-pip-autofix-${{ hashFiles('**/requirements*.txt', '**/setup.py', '**/pyproject.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-autofix-
+            ${{ runner.os }}-pip-
+
+      - name: Install formatting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort autoflake
+
+      - name: Configure git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Auto-Fix Bot"
+
+      - name: Auto-fix with black
+        run: |
+          echo "Running black formatter..."
+          black . --exclude '/(\.git|\.venv|venv|build|dist|\.eggs)/' || true
+
+      - name: Auto-fix with isort
+        run: |
+          echo "Running isort..."
+          isort . --skip-glob '**/venv/*' --skip-glob '**/.venv/*' || true
+
+      - name: Auto-fix with autoflake
+        run: |
+          echo "Running autoflake to remove unused imports..."
+          autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables --exclude=venv,.venv . || true
+
+      - name: Check for changes
+        id: verify_changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Code formatting changes detected"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No code formatting changes needed"
+          fi
+
+      - name: Commit and push changes
+        if: steps.verify_changes.outputs.changes == 'true'
+        run: |
+          # Add all changes
+          git add -A
+
+          # Commit with [auto-fix] to prevent loops
+          git commit -m "🤖 [auto-fix] Format code with black, isort, and autoflake
+
+          Auto-formatted by GitHub Actions:
+          - Applied black code formatting
+          - Sorted imports with isort
+          - Removed unused imports with autoflake"
+
+          # Push changes
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Pushing to PR branch..."
+            git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          else
+            echo "Pushing to branch..."
+            git push origin HEAD
+          fi
+
+      - name: Comment on PR
+        if: |
+          github.event_name == 'pull_request' &&
+          steps.verify_changes.outputs.changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🤖 **Auto-Fix Applied**\n\nI\'ve automatically formatted your code with:\n- ✨ **black** - Python code formatter\n- 📦 **isort** - Import statement organizer\n- 🧹 **autoflake** - Unused import remover\n\nThe changes have been pushed to your PR. Please pull the latest changes to your local branch.'
+            })
+
   # Quick syntax check
   check:
     name: Quick Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Skip if commit message contains [skip ci]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    needs: [auto-fix]
+    # Skip if auto-fix made changes (they'll be in a new commit)
+    if: needs.auto-fix.outputs.changes_made != 'true'
 
     steps:
       - name: Checkout code
@@ -51,8 +162,9 @@ jobs:
     name: Format & Lint
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Skip if commit message contains [skip ci]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    needs: [auto-fix]
+    # Skip if auto-fix made changes (they'll be in a new commit)
+    if: needs.auto-fix.outputs.changes_made != 'true'
 
     steps:
       - name: Checkout code
@@ -97,8 +209,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [check, lint]
-    # Skip if commit message contains [skip ci]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    # Only run if previous jobs passed or were skipped
+    if: |
+      always() &&
+      (needs.check.result == 'success' || needs.check.result == 'skipped') &&
+      (needs.lint.result == 'success' || needs.lint.result == 'skipped')
 
     steps:
       - name: Checkout code
@@ -154,8 +269,9 @@ jobs:
     name: Security Audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Skip if commit message contains [skip ci]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    needs: [auto-fix]
+    # Skip if auto-fix made changes (they'll be in a new commit)
+    if: needs.auto-fix.outputs.changes_made != 'true'
 
     steps:
       - name: Checkout code
@@ -187,8 +303,9 @@ jobs:
     name: Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
-    # Skip if commit message contains [skip ci]
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    needs: [auto-fix]
+    # Skip if auto-fix made changes (they'll be in a new commit)
+    if: needs.auto-fix.outputs.changes_made != 'true'
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
