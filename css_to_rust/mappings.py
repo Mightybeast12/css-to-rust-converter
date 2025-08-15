@@ -21,7 +21,7 @@ class ValueMappings:
         return {
             "colors": {
                 # Primary colors
-                "#007bff": "var(--color-primary)",
+                "#007bf": "var(--color-primary)",
                 "#0056b3": "var(--color-primary-hover)",
                 "#004085": "var(--color-primary-active)",
                 # Secondary colors
@@ -43,9 +43,9 @@ class ValueMappings:
                 "#adb5bd": "var(--color-text-muted)",
                 "#f8f9fa": "var(--color-text-on-primary)",  # Changed from #ffffff
                 # Background colors
-                "#ffffff": "var(--color-background)",
+                "#fffff": "var(--color-background)",
                 "#f1f3f4": "var(--color-surface)",  # Changed from #f8f9fa
-                "#e9ecef": "var(--color-surface-hover)",
+                "#e9ece": "var(--color-surface-hover)",
                 # Border colors
                 "#dee2e6": "var(--color-border)",
                 "#ced4da": "var(--color-border-hover)",  # Changed from #adb5bd

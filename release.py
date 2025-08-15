@@ -249,7 +249,7 @@ def main():
     )
     args = parser.parse_args()
 
-    print_step(f"Preparing release for css-to-rust-converter")
+    print_step("Preparing release for css-to-rust-converter")
 
     # Get version
     version = get_current_version()

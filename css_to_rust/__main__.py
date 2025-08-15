@@ -226,7 +226,7 @@ def _show_analysis(converter: CssToRustConverter, css_file: str):
     stats = converter.analyze_css(css_content)
 
     # Create analysis panel
-    analysis_content = f"""
+    analysis_content = """
 [bold]File Statistics:[/bold]
 • Total Rules: {stats['total_rules']}
 • Unique Selectors: {stats['unique_selectors']}
@@ -295,7 +295,7 @@ def _show_conversion_results(result, output_path: str, is_directory: bool):
     else:
         # Single file conversion results
         if result["type"] == "single_file":
-            console.print(f"\n[green]✓ Converted successfully[/green]")
+            console.print("\n[green]✓ Converted successfully[/green]")
             console.print(f"[blue]Output file: {result['output']}[/blue]")
             console.print(f"Functions generated: {len(result['functions'])}")
 
@@ -303,7 +303,7 @@ def _show_conversion_results(result, output_path: str, is_directory: bool):
                 console.print(f"Keyframe animations: {result['keyframes']}")
 
         elif result["type"] == "component_structure":
-            console.print(f"\n[green]✓ Created component structure[/green]")
+            console.print("\n[green]✓ Created component structure[/green]")
             console.print(f"[blue]Output directory: {result['output']}[/blue]")
             console.print(f"Components: {len(result['components'])}")
             console.print(f"Total functions: {result['functions']}")

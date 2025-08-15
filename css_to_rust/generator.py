@@ -53,7 +53,7 @@ class RustGenerator:
         """Generate Rust function using inline template."""
         doc_comment = f"{function_name.replace('_', ' ').title()} styles"
 
-        return f"""//! {doc_comment}
+        return """//! {doc_comment}
 
 use stylist::Style;
 
@@ -163,7 +163,7 @@ pub fn {function_name}() -> Style {{
         """Generate component module using inline template."""
         doc_comment = f"{component_name.replace('_', ' ').title()} component styles"
 
-        module_content = f"""//! {doc_comment}
+        module_content = """//! {doc_comment}
 
 use stylist::Style;
 
@@ -195,7 +195,7 @@ use stylist::Style;
 
     def _generate_inline_mod_file(self, components: List[str]) -> str:
         """Generate mod.rs file using inline template."""
-        mod_content = f"""//! Style modules
+        mod_content = """//! Style modules
 
 """
 
