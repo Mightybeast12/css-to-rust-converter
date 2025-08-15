@@ -1,0 +1,170 @@
+name: Dependabot Post-Merge
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  post-merge-actions:
+    name: Post-Merge Version Bump
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pusher.name == 'dependabot[bot]' &&
+      !contains(github.event.head_commit.message, '[skip ci]')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Get merge info
+        id: merge_info
+        run: |
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          echo "Commit message: $COMMIT_MSG"
+
+          if [[ "$COMMIT_MSG" =~ deps.*: ]]; then
+            echo "dependency_update=true" >> $GITHUB_OUTPUT
+
+            if [[ "$COMMIT_MSG" =~ "patch" ]] || [[ "$COMMIT_MSG" =~ "0\.0\." ]]; then
+              echo "update_type=patch" >> $GITHUB_OUTPUT
+            elif [[ "$COMMIT_MSG" =~ "minor" ]] || [[ "$COMMIT_MSG" =~ "0\.[0-9]+\.0" ]]; then
+              echo "update_type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "update_type=none" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "dependency_update=false" >> $GITHUB_OUTPUT
+            echo "update_type=none" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install bump2version
+        if: steps.merge_info.outputs.dependency_update == 'true' && steps.merge_info.outputs.update_type == 'patch'
+        run: |
+          python -m pip install --upgrade pip
+          pip install bump2version
+
+      - name: Get current version
+        if: steps.merge_info.outputs.dependency_update == 'true' && steps.merge_info.outputs.update_type == 'patch'
+        id: current_version
+        run: |
+          # Try to get version from setup.py or pyproject.toml
+          VERSION=""
+          if [ -f setup.py ]; then
+            VERSION=$(python setup.py --version 2>/dev/null || echo "")
+          fi
+
+          if [ -z "$VERSION" ] && [ -f pyproject.toml ]; then
+            VERSION=$(python -c "
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('pyproject.toml', 'rb') as f:
+    data = tomllib.load(f)
+    print(data.get('project', {}).get('version', ''))
+" 2>/dev/null || echo "")
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Bump patch version
+        if: steps.merge_info.outputs.dependency_update == 'true' && steps.merge_info.outputs.update_type == 'patch' && steps.current_version.outputs.version != ''
+        id: new_version
+        run: |
+          # Configure bump2version if needed
+          if [ ! -f .bumpversion.cfg ] && [ ! -f setup.cfg ]; then
+            echo "[bumpversion]" > .bumpversion.cfg
+            echo "current_version = ${{ steps.current_version.outputs.version }}" >> .bumpversion.cfg
+            echo "commit = False" >> .bumpversion.cfg
+            echo "tag = False" >> .bumpversion.cfg
+            echo "" >> .bumpversion.cfg
+
+            if [ -f setup.py ]; then
+              echo "[bumpversion:file:setup.py]" >> .bumpversion.cfg
+            fi
+
+            if [ -f pyproject.toml ]; then
+              echo "[bumpversion:file:pyproject.toml]" >> .bumpversion.cfg
+            fi
+          fi
+
+          # Bump version
+          bump2version patch --allow-dirty
+
+          # Get the new version
+          NEW_VERSION=""
+          if [ -f setup.py ]; then
+            NEW_VERSION=$(python setup.py --version 2>/dev/null || echo "")
+          fi
+
+          if [ -z "$NEW_VERSION" ] && [ -f pyproject.toml ]; then
+            NEW_VERSION=$(python -c "
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
+with open('pyproject.toml', 'rb') as f:
+    data = tomllib.load(f)
+    print(data.get('project', {}).get('version', ''))
+" 2>/dev/null || echo "")
+          fi
+
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update CHANGELOG
+        if: steps.merge_info.outputs.dependency_update == 'true' && steps.merge_info.outputs.update_type == 'patch' && steps.new_version.outputs.version != ''
+        run: |
+          DATE=$(date '+%Y-%m-%d')
+          NEW_VERSION="${{ steps.new_version.outputs.version }}"
+
+          if [ -f "CHANGELOG.md" ]; then
+            if grep -q "## \[Unreleased\]" CHANGELOG.md; then
+              echo "📝 Adding dependency update to CHANGELOG"
+              awk '/## \[Unreleased\]/ {
+                print $0
+                print ""
+                print "### Dependencies"
+                print "- Updated dependencies (automated patch bump to '"$NEW_VERSION"')"
+                next
+              }
+              {print}' CHANGELOG.md > temp_changelog.md
+              mv temp_changelog.md CHANGELOG.md
+            fi
+          fi
+
+      - name: Commit version bump
+        if: steps.merge_info.outputs.dependency_update == 'true' && steps.merge_info.outputs.update_type == 'patch' && steps.new_version.outputs.version != ''
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          # Clean up temporary bumpversion config if we created it
+          if [ -f .bumpversion.cfg ]; then
+            rm .bumpversion.cfg
+          fi
+
+          git add setup.py pyproject.toml CHANGELOG.md 2>/dev/null || git add setup.py pyproject.toml 2>/dev/null || true
+
+          git commit -m "chore: bump patch version to ${{ steps.new_version.outputs.version }} [skip ci]
+
+          Automated version bump after dependency updates" || echo "No changes to commit"
+
+          if git diff HEAD~ --quiet; then
+            echo "No changes were made"
+          else
+            git push
+            echo "✅ Version bumped to ${{ steps.new_version.outputs.version }}"
+          fi
