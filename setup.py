@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Setup script for CSS-to-Rust converter. """
+"""Setup script for CSS-to-Rust converter."""
 
 from setuptools import find_packages, setup
 
