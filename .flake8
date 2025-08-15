@@ -1,0 +1,30 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203, E266, E501, W503
+# E203: whitespace before ':' (conflicts with black)
+# E266: too many leading '#' for block comment
+# E501: line too long (we set max-line-length instead)
+# W503: line break before binary operator (conflicts with black)
+
+max-complexity = 10
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    build,
+    dist,
+    *.egg-info,
+    .eggs,
+    .tox,
+    .pytest_cache,
+    .mypy_cache,
+    .coverage,
+    htmlcov
+
+# Additional error codes to ignore for specific cases
+per-file-ignores =
+    # F401: imported but unused
+    __init__.py:F401
+    # F841: local variable assigned but never used (for setup.py)
+    setup.py:F841

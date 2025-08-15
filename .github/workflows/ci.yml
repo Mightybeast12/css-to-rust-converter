@@ -55,7 +55,7 @@ jobs:
       - name: Install formatting tools
         run: |
           python -m pip install --upgrade pip
-          pip install black isort autoflake
+          pip install black isort autoflake autopep8
 
       - name: Configure git
         run: |
@@ -65,17 +65,24 @@ jobs:
       - name: Auto-fix with black
         run: |
           echo "Running black formatter..."
-          black . --exclude '/(\.git|\.venv|venv|build|dist|\.eggs)/' || true
+          black . || true
 
       - name: Auto-fix with isort
         run: |
           echo "Running isort..."
-          isort . --skip-glob '**/venv/*' --skip-glob '**/.venv/*' || true
+          isort . || true
 
       - name: Auto-fix with autoflake
         run: |
-          echo "Running autoflake to remove unused imports..."
-          autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables --exclude=venv,.venv . || true
+          echo "Running autoflake to remove unused imports and variables..."
+          autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables --remove-duplicate-keys --exclude=venv,.venv,__pycache__ . || true
+
+      - name: Fix f-strings without placeholders
+        run: |
+          echo "Fixing f-strings without placeholders..."
+          # Find and fix f-strings that don't have placeholders
+          find . -name "*.py" -type f -not -path "*/\.*" -not -path "*/venv/*" -not -path "*/__pycache__/*" -exec sed -i 's/f"\([^{]*\)"/"\1"/g' {} \; || true
+          find . -name "*.py" -type f -not -path "*/\.*" -not -path "*/venv/*" -not -path "*/__pycache__/*" -exec sed -i "s/f'\([^{]*\)'/'\1'/g" {} \; || true
 
       - name: Check for changes
         id: verify_changes

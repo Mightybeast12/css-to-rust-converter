@@ -39,16 +39,16 @@ class ValueMappings:
                 "#e0a800": "var(--color-warning-hover)",
                 # Text colors
                 "#212529": "var(--color-text-primary)",
-                "#6c757d": "var(--color-text-secondary)",
+                "#495057": "var(--color-text-secondary)",  # Changed from #6c757d
                 "#adb5bd": "var(--color-text-muted)",
-                "#ffffff": "var(--color-text-on-primary)",
+                "#f8f9fa": "var(--color-text-on-primary)",  # Changed from #ffffff
                 # Background colors
                 "#ffffff": "var(--color-background)",
-                "#f8f9fa": "var(--color-surface)",
+                "#f1f3f4": "var(--color-surface)",  # Changed from #f8f9fa
                 "#e9ecef": "var(--color-surface-hover)",
                 # Border colors
                 "#dee2e6": "var(--color-border)",
-                "#adb5bd": "var(--color-border-hover)",
+                "#ced4da": "var(--color-border-hover)",  # Changed from #adb5bd
                 # Common shorthands
                 "white": "var(--color-background)",
                 "black": "var(--color-text-primary)",
