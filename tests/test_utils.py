@@ -1,19 +1,19 @@
 """Tests for CSS to Rust utility functions."""
 
-import pytest
+
 from css_to_rust.utils import (
-    normalize_selector,
-    extract_class_name,
-    is_valid_rust_identifier,
-    sanitize_rust_identifier,
-    format_css_property,
+    calculate_specificity,
     detect_css_framework,
     estimate_conversion_complexity,
-    group_related_selectors,
-    optimize_css_content,
-    validate_css_syntax,
+    extract_class_name,
     extract_color_palette,
-    calculate_specificity,
+    format_css_property,
+    group_related_selectors,
+    is_valid_rust_identifier,
+    normalize_selector,
+    optimize_css_content,
+    sanitize_rust_identifier,
+    validate_css_syntax,
 )
 
 
@@ -170,7 +170,13 @@ class TestGroupRelatedSelectors:
 
     def test_basic_grouping(self):
         """Test basic selector grouping."""
-        selectors = [".button", ".button-primary", ".button-secondary", ".card", ".card-header"]
+        selectors = [
+            ".button",
+            ".button-primary",
+            ".button-secondary",
+            ".card",
+            ".card-header",
+        ]
         groups = group_related_selectors(selectors)
 
         assert "button" in groups
@@ -253,7 +259,7 @@ class TestExtractColorPalette:
         css = ".class { color: #fff; background: #123456; }"
         colors = extract_color_palette(css)
 
-        assert "#fff" in colors["hex"]
+        assert "#ff" in colors["hex"]
         assert "#123456" in colors["hex"]
 
     def test_rgb_colors(self):

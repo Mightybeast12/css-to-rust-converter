@@ -1,8 +1,7 @@
 """Tests for CSS to Rust converter module."""
 
-import pytest
+
 from css_to_rust.converter import CssToRustConverter
-from css_to_rust.parser import CssRule
 
 
 class TestCssToRustConverter:
@@ -15,9 +14,9 @@ class TestCssToRustConverter:
     def test_converter_initialization(self):
         """Test converter initialization."""
         assert self.converter is not None
-        assert hasattr(self.converter, 'parser')
-        assert hasattr(self.converter, 'generator')
-        assert hasattr(self.converter, 'mappings')
+        assert hasattr(self.converter, "parser")
+        assert hasattr(self.converter, "generator")
+        assert hasattr(self.converter, "mappings")
 
     def test_convert_simple_css(self):
         """Test converting simple CSS."""
@@ -44,9 +43,9 @@ class TestCssToRustConverter:
 
         # Test various options
         options = {
-            'component_name': 'TestComponent',
-            'use_theme': True,
-            'generate_tests': False
+            "component_name": "TestComponent",
+            "use_theme": True,
+            "generate_tests": False,
         }
 
         try:

@@ -1,10 +1,10 @@
 """Integration tests for CSS to Rust converter."""
 
-import pytest
-from css_to_rust.parser import CssParser
-from css_to_rust.mappings import ValueMappings
+
 from css_to_rust.converter import CssToRustConverter
 from css_to_rust.generator import RustCodeGenerator
+from css_to_rust.mappings import ValueMappings
+from css_to_rust.parser import CssParser
 
 
 class TestIntegration:

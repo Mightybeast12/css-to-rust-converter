@@ -1,7 +1,6 @@
 """Pytest configuration and shared fixtures."""
 
 import sys
-import os
 from pathlib import Path
 
 # Add the project root to Python path

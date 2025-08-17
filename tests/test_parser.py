@@ -1,7 +1,7 @@
 """Tests for CSS parser module."""
 
-import pytest
-from css_to_rust.parser import CssParser, CssRule, CssKeyframe
+
+from css_to_rust.parser import CssKeyframe, CssParser, CssRule
 
 
 class TestCssParser:
@@ -121,7 +121,10 @@ class TestCssParser:
         assert len(rules) == 2
         # Check if pseudo-selectors are handled
         for rule in rules:
-            assert rule.selector in [".button", ".input"] or rule.pseudo_selector in ["hover", "focus"]
+            assert rule.selector in [".button", ".input"] or rule.pseudo_selector in [
+                "hover",
+                "focus",
+            ]
 
     def test_parse_comments(self):
         """Test parsing with comments."""
@@ -188,7 +191,7 @@ class TestCssParser:
             }
         }
         """
-        rules = self.parser.parse(css)
+        self.parser.parse(css)
 
         # Check keyframes were parsed
         assert len(self.parser.keyframes) == 1
@@ -229,11 +232,18 @@ class TestCssParser:
 
         # With pseudo-selectors
         assert parser.get_function_name_from_selector(".btn", "hover") == "btn_hover"
-        assert parser.get_function_name_from_selector(".input", "focus") == "input_focus"
+        assert (
+            parser.get_function_name_from_selector(".input", "focus") == "input_focus"
+        )
 
         # Complex selectors
-        assert parser.get_function_name_from_selector(".parent > .child") == "parent_child"
-        assert parser.get_function_name_from_selector("div.card[data-active]") == "div_card_data_active"
+        assert (
+            parser.get_function_name_from_selector(".parent > .child") == "parent_child"
+        )
+        assert (
+            parser.get_function_name_from_selector("div.card[data-active]")
+            == "div_card_data_active"
+        )
 
         # Starting with numbers
         assert parser.get_function_name_from_selector("123-class") == "style_123_class"
@@ -287,7 +297,7 @@ class TestCssRule:
             properties={"color": "red", "margin": "10px"},
             media_query=None,
             pseudo_selector=None,
-            raw_css=".test-class { color: red; margin: 10px; }"
+            raw_css=".test-class { color: red; margin: 10px; }",
         )
 
         assert rule.selector == ".test-class"
@@ -303,7 +313,7 @@ class TestCssRule:
             properties={"width": "100%"},
             media_query="(max-width: 768px)",
             pseudo_selector=None,
-            raw_css=""
+            raw_css="",
         )
 
         assert rule.media_query == "(max-width: 768px)"
@@ -316,7 +326,7 @@ class TestCssRule:
             properties={"background": "blue"},
             media_query=None,
             pseudo_selector="hover",
-            raw_css=""
+            raw_css="",
         )
 
         assert rule.pseudo_selector == "hover"
@@ -332,8 +342,8 @@ class TestCssKeyframe:
             name="slideIn",
             keyframes={
                 "0%": {"transform": "translateX(-100%)"},
-                "100%": {"transform": "translateX(0)"}
-            }
+                "100%": {"transform": "translateX(0)"},
+            },
         )
 
         assert keyframe.name == "slideIn"

@@ -51,7 +51,7 @@ class RustGenerator:
 
     def _generate_inline_function(self, function_name: str, css_content: str) -> str:
         """Generate Rust function using inline template."""
-        doc_comment = f"{function_name.replace('_', ' ').title()} styles"
+        f"{function_name.replace('_', ' ').title()} styles"
 
         return """//! {doc_comment}
 
@@ -161,7 +161,7 @@ pub fn {function_name}() -> Style {{
         self, component_name: str, functions: Dict[str, str]
     ) -> str:
         """Generate component module using inline template."""
-        doc_comment = f"{component_name.replace('_', ' ').title()} component styles"
+        f"{component_name.replace('_', ' ').title()} component styles"
 
         module_content = """//! {doc_comment}
 

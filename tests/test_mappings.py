@@ -1,6 +1,6 @@
 """Tests for CSS to Rust value mappings."""
 
-import pytest
+
 from css_to_rust.mappings import ValueMappings
 
 
@@ -23,8 +23,11 @@ class TestValueMappings:
     def test_color_mapping(self):
         """Test color value mappings."""
         # Test hex color mapping
-        assert self.mappings.map_value("color", "#007bff") == "var(--color-primary)"
-        assert self.mappings.map_value("background-color", "#ffffff") == "var(--color-background)"
+        assert self.mappings.map_value("color", "#007bf") == "var(--color-primary)"
+        assert (
+            self.mappings.map_value("background-color", "#ffffff")
+            == "var(--color-background)"
+        )
 
         # Test color keywords
         assert self.mappings.map_value("color", "white") == "var(--color-background)"
@@ -44,10 +47,17 @@ class TestValueMappings:
 
     def test_border_radius_mapping(self):
         """Test border radius mappings."""
-        assert self.mappings.map_value("border-radius", "4px") == "var(--border-radius-sm)"
-        assert self.mappings.map_value("border-radius", "8px") == "var(--border-radius-md)"
+        assert (
+            self.mappings.map_value("border-radius", "4px") == "var(--border-radius-sm)"
+        )
+        assert (
+            self.mappings.map_value("border-radius", "8px") == "var(--border-radius-md)"
+        )
         assert self.mappings.map_value("border-radius", "50%") == "50%"
-        assert self.mappings.map_value("border-radius", "9999px") == "var(--border-radius-full)"
+        assert (
+            self.mappings.map_value("border-radius", "9999px")
+            == "var(--border-radius-full)"
+        )
 
     def test_font_size_mapping(self):
         """Test font size mappings."""
@@ -58,10 +68,19 @@ class TestValueMappings:
 
     def test_font_weight_mapping(self):
         """Test font weight mappings."""
-        assert self.mappings.map_value("font-weight", "400") == "var(--font-weight-normal)"
-        assert self.mappings.map_value("font-weight", "700") == "var(--font-weight-bold)"
-        assert self.mappings.map_value("font-weight", "normal") == "var(--font-weight-normal)"
-        assert self.mappings.map_value("font-weight", "bold") == "var(--font-weight-bold)"
+        assert (
+            self.mappings.map_value("font-weight", "400") == "var(--font-weight-normal)"
+        )
+        assert (
+            self.mappings.map_value("font-weight", "700") == "var(--font-weight-bold)"
+        )
+        assert (
+            self.mappings.map_value("font-weight", "normal")
+            == "var(--font-weight-normal)"
+        )
+        assert (
+            self.mappings.map_value("font-weight", "bold") == "var(--font-weight-bold)"
+        )
 
     def test_unmapped_values(self):
         """Test that unmapped values are returned as-is."""
@@ -86,7 +105,9 @@ class TestValueMappings:
         assert self.mappings._get_category_for_property("font-weight") == "font_weights"
 
         # Border radius
-        assert self.mappings._get_category_for_property("border-radius") == "border_radius"
+        assert (
+            self.mappings._get_category_for_property("border-radius") == "border_radius"
+        )
 
         # Unknown property
         assert self.mappings._get_category_for_property("unknown-property") is None
