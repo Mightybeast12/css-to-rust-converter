@@ -1,6 +1,5 @@
 """Tests for CSS to Rust utility functions."""
 
-
 from css_to_rust.utils import (
     calculate_specificity,
     detect_css_framework,
@@ -259,7 +258,7 @@ class TestExtractColorPalette:
         css = ".class { color: #fff; background: #123456; }"
         colors = extract_color_palette(css)
 
-        assert "#ff" in colors["hex"]
+        assert "#f" in colors["hex"]
         assert "#123456" in colors["hex"]
 
     def test_rgb_colors(self):

@@ -1,6 +1,5 @@
 """Integration tests for CSS to Rust converter."""
 
-
 from css_to_rust.converter import CssToRustConverter
 from css_to_rust.generator import RustCodeGenerator
 from css_to_rust.mappings import ValueMappings
