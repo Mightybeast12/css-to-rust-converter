@@ -1,6 +1,5 @@
 """Tests for Rust code generator module."""
 
-
 from css_to_rust.generator import RustCodeGenerator
 from css_to_rust.parser import CssRule
 
@@ -66,7 +65,7 @@ class TestRustCodeGenerator:
         """Test generating code with theme support."""
         rule = CssRule(
             selector=".themed",
-            properties={"background-color": "#007bf", "padding": "16px"},
+            properties={"background-color": "#007b", "padding": "16px"},
         )
 
         try:
@@ -128,7 +127,7 @@ class TestRustCodeGenerator:
         test_cases = [
             ("10px", '"10px"'),
             ("red", '"red"'),
-            ("#fffff", '"#ffffff"'),
+            ("#ffff", '"#ffffff"'),
             ("1px solid black", '"1px solid black"'),
         ]
 
