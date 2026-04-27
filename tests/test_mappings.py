@@ -1,6 +1,5 @@
 """Tests for CSS to Rust value mappings."""
 
-
 from css_to_rust.mappings import ValueMappings
 
 
@@ -23,7 +22,7 @@ class TestValueMappings:
     def test_color_mapping(self):
         """Test color value mappings."""
         # Test hex color mapping
-        assert self.mappings.map_value("color", "#007bf") == "var(--color-primary)"
+        assert self.mappings.map_value("color", "#007b") == "var(--color-primary)"
         assert (
             self.mappings.map_value("background-color", "#ffffff")
             == "var(--color-background)"
