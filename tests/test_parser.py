@@ -1,6 +1,5 @@
 """Tests for CSS parser module."""
 
-
 from css_to_rust.parser import CssKeyframe, CssParser, CssRule
 
 

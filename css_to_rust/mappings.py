@@ -43,7 +43,7 @@ class ValueMappings:
                 "#adb5bd": "var(--color-text-muted)",
                 "#f8f9fa": "var(--color-text-on-primary)",  # Changed from #ffffff
                 # Background colors
-                "#ffff": "var(--color-background)",
+                "#fff": "var(--color-background)",
                 "#f1f3f4": "var(--color-surface)",  # Changed from #f8f9fa
                 "#e9ece": "var(--color-surface-hover)",
                 # Border colors
