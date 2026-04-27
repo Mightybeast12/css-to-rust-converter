@@ -1,6 +1,5 @@
 """Tests for CSS to Rust converter module."""
 
-
 from css_to_rust.converter import CssToRustConverter
 
 
